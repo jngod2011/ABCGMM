@@ -1,0 +1,99 @@
+julia> include("MCMC.jl")
+
+n: 100   tau: 0.1
+MCMC results
+                mean      bias  st. err.      rmse
+  constant    -2.701    -1.419     0.391     1.472
+     slope     1.871    -0.129     0.223     0.258
+
+CI coverage
+beta1 CI coverage: 0.695
+beta2 CI coverage: 0.997
+
+
+n: 100   tau: 0.5
+MCMC results
+                mean      bias  st. err.      rmse
+  constant     0.001     0.001     0.118     0.118
+     slope     1.956    -0.044     0.113     0.121
+
+CI coverage
+beta1 CI coverage: 0.95
+beta2 CI coverage: 0.934
+
+
+n: 100   tau: 0.9
+MCMC results
+                mean      bias  st. err.      rmse
+  constant     2.708     1.426     0.396     1.480
+     slope     1.859    -0.141     0.239     0.277
+
+CI coverage
+beta1 CI coverage: 0.687
+beta2 CI coverage: 1.0
+
+
+n: 400   tau: 0.1
+MCMC results
+                mean      bias  st. err.      rmse
+  constant    -1.351    -0.070     0.097     0.119
+     slope     1.980    -0.020     0.067     0.070
+
+CI coverage
+beta1 CI coverage: 0.896
+beta2 CI coverage: 0.95
+
+
+n: 400   tau: 0.5
+MCMC results
+                mean      bias  st. err.      rmse
+  constant    -0.001    -0.001     0.061     0.061
+     slope     1.992    -0.008     0.049     0.050
+
+CI coverage
+beta1 CI coverage: 0.92
+beta2 CI coverage: 0.933
+
+
+n: 400   tau: 0.9
+MCMC results
+                mean      bias  st. err.      rmse
+  constant     1.341     0.060     0.098     0.114
+     slope     1.984    -0.016     0.070     0.072
+
+CI coverage
+beta1 CI coverage: 0.917
+beta2 CI coverage: 0.944
+
+
+n: 1600   tau: 0.1
+MCMC results
+                mean      bias  st. err.      rmse
+  constant    -1.295    -0.013     0.049     0.051
+     slope     1.997    -0.003     0.034     0.034
+
+CI coverage
+beta1 CI coverage: 0.895
+beta2 CI coverage: 0.932
+
+
+n: 1600   tau: 0.5
+MCMC results
+                mean      bias  st. err.      rmse
+  constant     0.003     0.003     0.030     0.030
+     slope     1.998    -0.002     0.025     0.025
+
+CI coverage
+beta1 CI coverage: 0.916
+beta2 CI coverage: 0.919
+
+
+n: 1600   tau: 0.9
+MCMC results
+                mean      bias  st. err.      rmse
+  constant     1.293     0.012     0.047     0.049
+     slope     1.997    -0.003     0.032     0.033
+
+CI coverage
+beta1 CI coverage: 0.908
+beta2 CI coverage: 0.927

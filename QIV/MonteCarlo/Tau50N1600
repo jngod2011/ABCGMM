@@ -1,0 +1,34 @@
+local constant results
+reps so far: 1000
+true: [0.0 2.0]
+mean: [0.000300023 1.99816]
+bias: [0.000300023 -0.00183922]
+st. dev.: [0.0301066 0.0251809]
+mse.: [0.000906497 0.000637461]
+rmse.: [0.0301081 0.025248]
+
+local linear results
+reps so far: 1000
+true: [0.0 2.0]
+mean: [0.000413264 1.99823]
+bias: [0.000413264 -0.00177036]
+st. dev.: [0.0296595 0.0249672]
+mse.: [0.00087986 0.000626495]
+rmse.: [0.0296624 0.0250299]
+
+IV results
+reps so far: 1000
+true: [0.0 2.0]
+mean: [9.96232e-5 2.0007]
+bias: [9.96232e-5 0.000697402]
+st. dev.: [0.0301066 0.0303313]
+mse.: [0.000906416 0.000920475]
+rmse.: [0.0301068 0.0303393]
+
+local constant CI coverage
+beta1 CI coverage: 0.942
+beta2 CI coverage: 0.94
+
+local linear CI coverage
+beta1 CI coverage: 0.91
+beta2 CI coverage: 0.905
