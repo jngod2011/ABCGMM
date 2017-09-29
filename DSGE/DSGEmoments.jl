@@ -51,7 +51,7 @@ function DSGEmoments(thetas, realdata)
         # law of motion k: good for delta
         invest = y - c
         e8 = lag(invest,1) + (1 - delta)*lag(k,1) - k
-        errors = [e1 e2 e3 e4 e5 e6 e7 e8 shock1.*shock2 shock1.*shock3]
+        errors = [e1 e2/100.0 e3 e4 e5/100.0 e6 e7/100.0 e8 shock1.*shock2 shock1.*shock3]
         errors = errors[3:end,:] # need to drop 2, because k uses a lag, and we use lagged k
         return errors
 end

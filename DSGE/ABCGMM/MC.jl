@@ -1,5 +1,6 @@
 include("AISGMM.jl") # the adaptive importance sampling algorithm
 include(Pkg.dir()"/MPI/examples/montecarlo.jl")
+include("DSGEmodel.jl")
 using Distributions
 
 function wrapper()
@@ -10,19 +11,13 @@ function wrapper()
     nParticles = 10000 # particles to keep per iter
     multiples = 5  # particles tried is this multiple of particle kept, e.g., 5 means keep 20%
     # generate data
-    y,x,z,cholsig,siginv, betahatIV = makeQIVdata(beta, tau, n) # draw the data
-    cholsig = Array(cholsig)
-    # do the fit
-    Zn = [0.0 0.0 0.0 0.0]
-    contrib = AIS_fit(Zn, nParticles, multiples, y, x, z, tau, cholsig, siginv, false)
-    contrib = [contrib betahatIV']
+    contrib = AIS_fit(nParticles, multiples, data, false)
+    return contrib
 end
 
 # the monitoring function
 function QIVMonitor(sofar, results)
     if mod(sofar,1) == 0
-        offset = [quantile(Normal(),tau) 0.0]
-        theta = [0.0 2.0] + offset
         # local constant
         m = mean(results[1:sofar,[1;5]],1)
         er = m - theta
