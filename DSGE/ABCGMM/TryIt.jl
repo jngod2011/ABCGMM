@@ -10,7 +10,7 @@ function wrapper()
     data = reshape(data, 160, 5)
     # features of estimation procedure
     nParticles = 10000 # particles to keep per iter
-    multiples = 2  # particles tried is this multiple of particle kept, e.g., 5 means keep 20%
+    multiples = 5  # particles tried is this multiple of particle kept, e.g., 5 means keep 20%
     # generate data
     contrib = AIS_fit(nParticles, multiples, data, true)
     return contrib
