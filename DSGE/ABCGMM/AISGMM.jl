@@ -16,11 +16,14 @@ function sample_from_particles(particles::Array{Float64,2}, delta::Array{Float64
 	n, k = size(particles)
     i = rand(1:n)
 	j = rand(1:k)
+    jj = rand(1:k)
     ok = false
     theta_s = similar(particles[i,:])
     while ok != true
         theta_s = particles[i,:]
         theta_s[j:j] += delta[j]*randn(1)
+        theta_s[jj:jj] += delta[jj]*randn(1)
+        #theta_s += delta.*randn(size(delta))
         ok, junk, junk = check_in_support(theta_s)
     end    
     return theta_s
@@ -123,11 +126,11 @@ function AIS_algorithm(nParticles::Int64, multiple::Int64, data, verbose=false)
         continue3 = (iters < maxiters)
         iterate =  (continue1 || continue2) & continue3 
         if iterate # generate new particles
-            particles, Zs, distances = GetNewParticles(particles, nParticles*multiple, data)
+            newparticles, newZs, newdistances = GetNewParticles(particles, nParticles*multiple, data)
             draws += nParticles*multiple
-            #particles = [particles; newparticles]
-            #Zs = [Zs; newZs]
-            #distances = [distances; newdistances]
+            particles = [particles; newparticles]
+            Zs = [Zs; newZs]
+            distances = [distances; newdistances]
             particles, Zs, distances =  Select(nParticles, distances, particles, Zs, verbose)
         end
         if !continue3
