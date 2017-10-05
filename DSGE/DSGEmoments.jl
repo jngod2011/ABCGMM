@@ -55,7 +55,7 @@ function DSGEmoments(thetas, data)
         # with the Euler error,so don't use them.
         # also, shock2 and shock 3 are very highly correlated for all parameter values, so use
         # the difference, to get levels right
-        errors = [e1 e2 e3 e6 e7 e8 shock1.*shock3 lag(y,1).*shock1 lag(y,1).*shock2]
+        errors = [e1 e2 e3 e6 e7 e8 shock1.*shock3 shock2-shock3 lag(data,1).*shock1 lag(data,1).*shock2]
         errors = errors[3:end,:] # need to drop 2, because lagk uses a lag, and we use lagged k
         return errors
 end
