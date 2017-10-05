@@ -1,50 +1,33 @@
-#=
-This script allows you to play around with GMM
-esimation of the simple DSGE model. You can
-experiment with different moments and different
-start values. This should convince you that 
-simply getting the GMM estimates can be quite 
-difficult.
-
-SA plus start at true values give optimized
-function = 0, when exactly identified, so
-there is a solution
-=#
-
-dsgedata = readdlm("simdata.design")
-# choose the sample
-#i = rand(1:1000)
-i = 3 # use a fixed sample, to check replicability
-dsgedata = dsgedata[i,:]
-dsgedata = reshape(dsgedata, 160, 5)
-include("DSGEmoments.jl")  # computes errors
-include("parameters.jl") # load true parameter values
-theta0 = lb_param_ub[:,2] 
-
-# define GMM criterion
-moments = theta -> DSGEmoments(theta, dsgedata)
-# average moments
-m = theta -> vec(mean(moments(theta),1)) # 1Xg
-# moment contributions
-momentcontrib = theta -> moments(theta) # nXg
-# weight
-weight = theta -> inv(NeweyWest(momentcontrib(theta)))
-# objective: CUE GMM criterion
-obj = theta -> m(theta)'*weight(theta)*m(theta)
-# estimate by simulated annealing
-lb = lb_param_ub[:,1]
-ub = lb_param_ub[:,3]
-#thetastart = theta0    # true values as start
-for i = 1:10
-    thetastart = (ub+lb)/2.0 # prior mean as start
-    # simulated annealing
-    thetahat, objvalue, converged, details = samin(obj, thetastart, lb, ub; ns = 20, verbosity = 1, rt = 0.75)
-    # CUE
-    gmmresults(moments, thetahat, "")
+# this computes the GMM estimator by SA minimization, for 
+# each of the 1000 data sets.
+function main()
+    include("DSGEmoments.jl")  # computes errors
+    include("parameters.jl") # load true parameter values
+    dsgedata = readdlm("simdata.design")
+    # estimate by simulated annealing
+    lb = lb_param_ub[:,1]
+    ub = lb_param_ub[:,3]
+    results = zeros(1000,11)
+    for i = 1:2
+        data = dsgedata[i,:]
+        data = reshape(data, 160, 5)
+        thetastart = (ub+lb)/2.0 # prior mean as start
+        # define GMM criterion
+        moments = theta -> DSGEmoments(theta, data)
+        m = theta -> vec(mean(moments(theta),1)) # 1Xg
+        momentcontrib = theta -> moments(theta) # nXg
+        weight = theta -> inv(cov(momentcontrib(theta)))
+        obj = theta -> m(theta)'*weight(theta)*m(theta)
+        # simulated annealing
+        thetahat, objvalue, converged, details = samin(obj, thetastart, lb, ub; ns = 20, verbosity = 1, rt = 0.9)
+        results[i,:] = [thetahat; objvalue; details[end,1]]
+        #ms = moments(thetahat)
+        #dstats(ms)
+        #prettyprint(cor(ms))
+        # CUE
+        #gmmresults(moments, thetahat, "")
+    end
+    writedlm("SA_results.out", results)
 end
-# attempt box constrained interior point method to refine
-#thetahat, objvalue, converged = fmincon(obj, thetahat, [],[], lb, ub)
-#println(thetahat)
-#println("the average moments at the estimate (should be zeros when exactly identified):")
-#dstats(moments(thetahat));
+main()
 

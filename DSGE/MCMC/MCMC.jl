@@ -1,31 +1,41 @@
 # uniform random walk, with bounds check
 function proposal(current, tuning)
-    include("parameters.jl")
+    lb_param_ub = [
+        0.20   	0.33   	0.4;	# alpha
+        0.95    0.99   	0.9999; 	    # beta
+        0.01    0.025   0.1;    # delta
+        0.0	    2      	5;		# gam
+        0    	0.9   	0.9999;	    # rho1
+        0.0001       0.02 	0.1;    # sigma1
+        0    	0.7     0.9999;      # rho2
+        0.0001	    0.01  	0.1;    # sigma2
+        6/24    8/24	9/24	# nss
+    ]
     lb = lb_param_ub[:,1]
     ub = lb_param_ub[:,3]
-    trial = similar(current)
-    for i = 1:size(current,1)
-        tt = 0.0
+    trial = copy(current)
+    i = rand(1:size(current,1))
+    tt = 0.0
+    #for i = 1:size(current,1)
         ok = false
         while ok != true
             tt = current[i] + tuning[i].*randn()
             ok = (tt > lb[i]) && (tt < ub[i])
         end
         trial[i] = tt
-    end   
+    #end   
     return trial
 end
 
 function likelihood(theta, data)
-    g = DSGEmoments(theta, data)
-    #W = inv(NeweyWest(g))
-    #W = inv(diagm(diag(NeweyWest(g))))
-    W = inv(diagm(diag(cov(g))))
-    #W = inv(cov(g))
-    #W = eye(size(g,2))
-    ghat = mean(g,1)
+    gs = DSGEmoments(theta, data)
     n = size(data,1)
-    lnL = (-0.5*n*ghat*W*ghat')[1,1]
+    sigma = cov(gs)
+    #siginv = inv(diagm(diag(sigma)))
+    siginv = inv(sigma)
+    ghat = mean(gs,1)
+    distance = n*(ghat*siginv*ghat')[1,1]
+    lnL = -0.5*distance
     return lnL
 end
 

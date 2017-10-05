@@ -3,13 +3,13 @@ include("MCMC.jl")
 include("DSGEmoments.jl")
 function main()
     dsgedata = readdlm("simdata.design") # the data for the 1000 reps
-    ChainLength = 100000
+    ChainLength = 20000
     reps = 1000
     reps = 1
-    burnin = 10000
+    burnin = 500000
     chain = 0.0 # initialize outside loop
-    tuning = [0.0005, 0.0002, 0.0001, 0.05, 0.002, 0.0005, 0.002, 0.0005, 0.001] # fix this somehow
-    results = zeros(1000,18) # nparams X 2: pos mean and inci, for each param
+    tuning = [0.002, 0.002, 0.001, 0.2, 0.05, 0.005, 0.1, 0.005, 0.02] # fix this somehow
+    results = zeros(reps,18) # nparams X 2: pos mean and inci, for each param
     include("parameters.jl")
     lb = lb_param_ub[:,1]
     ub = lb_param_ub[:,3]
@@ -17,7 +17,7 @@ function main()
     #Threads.@threads for rep = 1:reps
     for rep = 1:reps
         # get the data for the rep (drawn from design at true param. values)
-        data = dsgedata[rep,:]
+        data = dsgedata[2,:]
         data = reshape(data, 160, 5)
         # fix this next for this DGP
         initialTheta = (ub + lb) / 2.0 # prior mean to start
