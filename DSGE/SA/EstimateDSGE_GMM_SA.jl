@@ -7,7 +7,7 @@ dsgedata = readdlm("simdata.design")
 # estimate by simulated annealing
 lb = lb_param_ub[:,1]
 ub = lb_param_ub[:,3]
-results = zeros(1000,11)
+results = zeros(1000,21)
 #Threads.@threads for i = 1:1000
 for i = 1:1000
     data = dsgedata[i,:]
@@ -20,13 +20,14 @@ for i = 1:1000
     obj = theta -> m(theta)'*weight(theta)*m(theta)
     thetastart = (ub+lb)/2.0 # prior mean as start
     # simulated annealing
-    thetahat, objvalue, converged, details = samin(obj, thetastart, lb, ub; ns = 20, verbosity = 2, rt = 0.9)
-    results[i,:] = [thetahat; objvalue; details[end,1]]
+    thetahat, objvalue, converged, details = samin(obj, thetastart, lb, ub; ns = 20, verbosity = 1, rt = 0.9)
     #ms = moments(thetahat)
     #dstats(ms)
     #prettyprint(cor(ms))
     # CUE
-    #gmmresults(moments, thetahat, "")
+    thetahat2, objvalue2 = fmincon(obj, thetahat, [], [], lb, ub);
+    results[i,:] = [thetahat; objvalue; details[end,1]; thetahat2; objvalue2]
+    dstats(results[1,i,:])
 end
 writedlm("SA_results.out", results)
 
