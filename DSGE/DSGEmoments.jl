@@ -26,10 +26,11 @@ function DSGEmoments(thetas, data)
         psi =  (css^(-gam)) * (1-alpha) * (kss^alpha) * (nss^(-alpha))
         # use MPL-MRS
         e = log.(w) - gam*log.(c) -log.(psi)
-        u = e - rho_eta*lag(e,1)
-        e1 = u.^2.0 - sig_eta^2.0
-        e2 = u.*lag(u,1)
-        shock1 = u
+        X = lag(e,1)
+        u = e-X*rho_eta
+        e1 = X.*u 
+        e2 = u.^2.0 - sig_eta^2.0
+        shock1 = copy(u)
         # now the Euler eqn
         e3 = (1 + r - delta).*beta.*(c.^(-gam)) - lag(c,1).^(-gam) 
         # get K from MPK/MPL eqn: the following is not real capital, it is capital computed
@@ -37,24 +38,25 @@ function DSGEmoments(thetas, data)
         lagk = (alpha/(1.0-alpha))*lag(n.*w./r,1)
         # production function
         e = log.(y) - alpha*log.(lagk) - (1.0-alpha)*log.(n)
-        u = e - rho_z*lag(e,1)
-        e4 = u.^2.0 - sig_z^2.0
-        e5 = u.*lag(u,1)
-        shock2 = u
+        X = lag(e,1)
+        u = e-X*rho_z
+        e4 = X.*u 
+        e5 = u.^2.0 - sig_z^2.0
+        shock2 = copy(u)
         # MPL
         e = log.(w) + alpha*(log.(n)-log.(lagk)) - log.(1.0-alpha)
-        u = e - rho_z*lag(e,1)
-        e6 = u.^2.0 - sig_z^2.0
-        e7 = u.*lag(u,1)
-        shock3 = u
+        X = lag(e,1)
+        u = e-X*rho_z
+        e6 = X.*u 
+        e7 = u.^2.0 - sig_z^2.0
+        shock3 = copy(u)
         # law of motion k: good for delta
         invest = y - c
         e8 = lag(invest,1) + (1 - delta)*lag(lagk,1) - lagk
-        # note: crossing all variables with shocks gives highly correlated moments, so use only
-        # one variable with each shock. Also, variables crossed with tech shock are highly correlated
-        # with the Euler error,so don't use them.
-        # also, shock2 and shock 3 are very highly correlated for all parameter values, so use
-        # the difference, to get levels right
+        # shock2 and shock 3 are two alternative ways of recovering the technology shock.
+        # They are very highly correlated for all parameter values, though their levels may
+        # be different for some parameter values. Thus, use only the difference.
+        # Also, don't use e4 and e5, as they are essentially copies of e6 and e7.
         errors = [e1 e2 e3 e6 e7 e8 shock1.*shock3 shock2-shock3 lag(data,1).*shock1 lag(data,1).*shock2]
         errors = errors[3:end,:] # need to drop 2, because lagk uses a lag, and we use lagged k
         return errors
