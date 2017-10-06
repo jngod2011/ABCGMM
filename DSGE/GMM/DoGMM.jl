@@ -16,18 +16,17 @@ for i = 1:1000
     moments = theta -> DSGEmoments(theta, data)
     m = theta -> vec(mean(moments(theta),1)) # 1Xg
     momentcontrib = theta -> moments(theta) # nXg
-    weight = theta -> inv(cov(momentcontrib(theta)))
+    weight = theta -> inv(NeweyWest(momentcontrib(theta)))
     obj = theta -> m(theta)'*weight(theta)*m(theta)
     thetastart = (ub+lb)/2.0 # prior mean as start
     # simulated annealing
     thetahat, objvalue, converged, details = samin(obj, thetastart, lb, ub; ns = 20, verbosity = 1, rt = 0.9)
-    #ms = moments(thetahat)
-    #dstats(ms)
-    #prettyprint(cor(ms))
-    # CUE
-    thetahat2, objvalue2 = fmincon(obj, thetahat, [], [], lb, ub);
-    results[i,:] = [thetahat; objvalue; details[end,1]; thetahat2; objvalue2]
-    dstats(results[1,i,:])
+    # gradient-based for st. errors.
+    thetahat2, objvalue2, converged = fmincon(obj, thetahat, [],[], lb, ub)
+    results[i,:] = [thetahat; thetahat2; details[end,1]; objvalue; objvalue2]
+    if i > 1
+        dstats(results[1:i,:])
+    end    
 end
-writedlm("SA_results.out", results)
+writedlm("GMM_results.out", results)
 
