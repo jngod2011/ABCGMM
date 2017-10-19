@@ -28,7 +28,7 @@ function DSGEmoments(thetas, data)
         e = log.(w) - gam*log.(c) -log.(psi)
         X = lag(e,1)
         u = e-X*rho_eta
-        e1 = X.*u 
+        e1 = X.*u
         e2 = u.^2.0 - sig_eta^2.0
         shock1 = copy(u)
         # now the Euler eqn
@@ -40,14 +40,14 @@ function DSGEmoments(thetas, data)
         e = log.(y) - alpha*log.(lagk) - (1.0-alpha)*log.(n)
         X = lag(e,1)
         u = e-X*rho_z
-        e4 = X.*u 
+        e4 = X.*u
         e5 = u.^2.0 - sig_z^2.0
         shock2 = copy(u)
         # MPL
         e = log.(w) + alpha*(log.(n)-log.(lagk)) - log.(1.0-alpha)
         X = lag(e,1)
         u = e-X*rho_z
-        e6 = X.*u 
+        e6 = X.*u
         e7 = u.^2.0 - sig_z^2.0
         shock3 = copy(u)
         # law of motion k: good for delta

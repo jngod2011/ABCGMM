@@ -16,13 +16,13 @@ function sample_from_particles(particles::Array{Float64,2}, delta::Array{Float64
 	n, k = size(particles)
     i = rand(1:n)
 	j = rand(1:k)
-    jj = rand(1:k)
+    #jj = rand(1:k)
     ok = false
     theta_s = similar(particles[i,:])
     while ok != true
         theta_s = particles[i,:]
         theta_s[j:j] += delta[j]*randn(1)
-        theta_s[jj:jj] += delta[jj]*randn(1)
+        #theta_s[jj:jj] += delta[jj]*randn(1)
         #theta_s += delta.*randn(size(delta))
         ok, junk, junk = check_in_support(theta_s)
     end    
@@ -33,19 +33,21 @@ end
 function AIS_fit(nParticles::Int64, multiples::Int64, data::Array{Float64,2}, verbose)
     # do AIS to get particles
     thetas, Zs = AIS_algorithm(nParticles, multiples, data, verbose)
+    thetas = thetas[:,[4,5,7]]
     params = size(thetas,2)
     Zs = Zs./std(Zs,1)
     ll_fit = -999. *ones(1,4*params)
     for i = 1:params
         # cross validation
         y = thetas[:,i]
-        lb = 0.05
+        lb = 0.3
         ub = 1.5
-        nb = 15
-        cvscores = LeaveOneOutCV(y, Zs, nb, lb, ub, 500)
+        nb = 10
+        #cvscores = LeaveOneOutCV(y, Zs, nb, lb, ub, 200)
         #println("parameter: ", i)
         #prettyprint(cvscores)
-        bwLL = cvscores[indmin(cvscores[:,3]),1]
+        #bwLL = cvscores[indmin(cvscores[:,3]),1]
+        bwLL = 1.0
         ll_fit[:,(i*4-4+1):i*4] = LocalPolynomial(thetas[:,i], Zs, zeros(1,size(Zs,2)), bwLL, 1, true, true)
     end
     return ll_fit
@@ -113,8 +115,8 @@ function AIS_algorithm(nParticles::Int64, multiple::Int64, data, verbose=false)
     iterate = true
     iters = 0
     # keep selecting until distances approx. chi-square
-    tolerance = 0.5
-    maxiters = 100
+    tolerance = 0.1
+    maxiters = 50
     n = size(data,1)
     dimZ = size(Zs, 2)
     draws = 0
@@ -122,7 +124,7 @@ function AIS_algorithm(nParticles::Int64, multiple::Int64, data, verbose=false)
         # check if we should iterate
         #continue1 = any(mean((abs.(sqrt(n)*Zs./sig') .> 1.65),1) .> tolerance) 
         continue1 = false
-        continue2 = mean(ccdf(Chisq(dimZ),distances) .< 0.01) > tolerance
+        continue2 = mean(ccdf(Chisq(dimZ),distances) .< 0.1) > tolerance
         continue3 = (iters < maxiters)
         iterate =  (continue1 || continue2) & continue3 
         if iterate # generate new particles
@@ -138,8 +140,10 @@ function AIS_algorithm(nParticles::Int64, multiple::Int64, data, verbose=false)
         end
         iters += 1
     end
-    particles, Zs, distances = GetNewParticles(particles, 20000, data)
-    draws += 20000
+    newparticles, newZs, newdistances = GetNewParticles(particles, nParticles, data)
+    particles = [particles; newparticles]
+    Zs = [Zs; newZs]
+    draws += nParticles
     println("total draws: ", draws)
     return particles, Zs
 end

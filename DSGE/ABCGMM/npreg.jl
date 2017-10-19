@@ -13,7 +13,7 @@ function LeaveOneOutCV(y::Array{Float64,1}, X::Array{Float64,2}, nb::Int64, lb::
     errorsLL95 = zeros(ntrials,nb)
     delta = (ub-lb)/(nb-1)
     bws = zeros(nb,1)
-    for i = 1:ntrials
+    Threads.@threads for i = 1:ntrials
         if ntrials == size(X,1) # just loop over sample if trials equal to sample size
             ii = i
         else

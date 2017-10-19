@@ -3,10 +3,10 @@ include("MCMC.jl")
 include("DSGEmoments.jl")
 function main()
     dsgedata = readdlm("simdata.design") # the data for the 1000 reps
-    ChainLength = 20000
+    ChainLength = 50000
     reps = 1000
     reps = 1
-    burnin = 500000
+    burnin = 1000000
     chain = 0.0 # initialize outside loop
     tuning = [0.002, 0.002, 0.001, 0.2, 0.05, 0.005, 0.1, 0.005, 0.02] # fix this somehow
     results = zeros(reps,18) # nparams X 2: pos mean and inci, for each param
@@ -23,9 +23,10 @@ function main()
         initialTheta = (ub + lb) / 2.0 # prior mean to start
         #initialTheta = truetheta
         chain = makechain(initialTheta, ChainLength, burnin, tuning, data)
-        #=
+        
         # plain MCMC fit
         posmean = mean(chain[1:9,:],2)
+        #=
         # do this next in a loop over params
         lower = quantile(chain[1,:],0.05)
         upper = quantile(chain[1,:],0.95)
