@@ -16,14 +16,11 @@ function sample_from_particles(particles::Array{Float64,2}, delta::Array{Float64
 	n, k = size(particles)
     i = rand(1:n)
 	j = rand(1:k)
-    #jj = rand(1:k)
     ok = false
     theta_s = similar(particles[i,:])
     while ok != true
         theta_s = particles[i,:]
         theta_s[j:j] += delta[j]*randn(1)
-        #theta_s[jj:jj] += delta[jj]*randn(1)
-        #theta_s += delta.*randn(size(delta))
         ok, junk, junk = check_in_support(theta_s)
     end    
     return theta_s

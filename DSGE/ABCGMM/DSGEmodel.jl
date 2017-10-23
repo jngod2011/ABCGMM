@@ -5,8 +5,8 @@ function aux_stat(theta::Array{Float64,1}, data::Array{Float64,2})
     sigma = cov(ms)
     siginv = inv(sigma)
     m = mean(ms,1)
-    distance = n*(m*siginv*m')[1,1]
     m += randn(size(m))*chol(sigma)/sqrt(n)
+    distance = n*(m*siginv*m')[1,1]
     return m, distance
 end
 

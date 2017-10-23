@@ -1,8 +1,8 @@
-d1 = readdlm("First.out")
-d2 = readdlm("Second.out")
-d3 = readdlm("Third.out")
-d4 = readdlm("Fourth.out")
-d5 = readdlm("Fifth.out")
+d1 = readdlm("First.out.NW")
+d2 = readdlm("Second.out.NW")
+d3 = readdlm("Third.out.NW")
+d4 = readdlm("Fourth.out.NW")
+d5 = readdlm("Fifth.out.NW")
 
 obj = [d1[:,20] d2[:,20] d3[:,20] d4[:,20] d5[:,20]]
 prettyprint(obj)
@@ -26,6 +26,20 @@ for i = 1:100
     end    
 end
 dstats(results);
+
+inci = zeros(100,9)
+include("parameters.jl")
+truetheta = lb_param_ub[:,2]
+        
+for i = 1:9
+    lower = results[:,i] - 1.65*results[:,9+i]
+    upper = results[:,i] + 1.65*results[:,9+i]
+    inci[:,i] = (truetheta[i] .> lower) .& (truetheta[i] .< upper)
+end
+
+println(mean(inci,1))
+
+#=
 # choose the worst of the runs
 for i = 1:100
     ind = indmax(obj[i,:])
@@ -43,3 +57,4 @@ for i = 1:100
 end
 dstats(results);
 #prettyprint(d1[15:15,:])
+=#

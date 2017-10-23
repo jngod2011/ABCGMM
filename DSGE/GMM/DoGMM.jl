@@ -8,19 +8,22 @@ dsgedata = readdlm("simdata.design")
 lb = lb_param_ub[:,1]
 ub = lb_param_ub[:,3]
 results = zeros(100,20)
-Threads.@threads for i = 1:100
-#for i = 1:100
+#Threads.@threads for i = 1:100
+for i = 1:100
     data = dsgedata[i,:]
     data = reshape(data, 160, 5)
     # define GMM criterion
     moments = theta -> DSGEmoments(theta, data)
     m = theta -> vec(mean(moments(theta),1)) # 1Xg
     momentcontrib = theta -> moments(theta) # nXg
-    weight = theta -> inv(cov(momentcontrib(theta)))
+    weight = theta -> inv(NeweyWest(momentcontrib(theta)))
     obj = theta -> m(theta)'*weight(theta)*m(theta)
     thetastart = (ub+lb)/2.0 # prior mean as start
+    # gradient based (doesn't work)
+    #thetahat, objvalue, converged = fmincon(obj, thetastart, [], [], lb, ub; iterlim=10000)
+    #details = 1.0
     # simulated annealing
-    thetahat, objvalue, converged, details = samin(obj, thetastart, lb, ub; ns = 20, verbosity = 1, rt = 0.9)
+    #thetahat, objvalue, converged, details = samin(obj, thetastart, lb, ub; ns = 20, verbosity = 1, rt = 0.9)
     D = (Calculus.jacobian(m, vec(thetahat), :central))
     W = weight(thetahat)
     V = inv(D'*W*D)/(size(data,1)-2.0)
@@ -32,5 +35,5 @@ Threads.@threads for i = 1:100
     #    dstats(results[1:i,:])
     #end    
 end
-writedlm("Fifth.out", results)
+writedlm("junk", results)
 
