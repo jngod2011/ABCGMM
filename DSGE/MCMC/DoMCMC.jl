@@ -29,14 +29,14 @@ function main()
         for i = 1:9
             lower = quantile(chain[i,:],0.05)
             upper = quantile(chain[i,:],0.95)
-            inci[i] = truetheta[i] >= lower .& truetheta[i] <= upper
+            inci[i] = truetheta[i] >= lower && truetheta[i] <= upper
         end
         results[rep,1:9] = posmean
         results[rep,10:18] = inci
         #println(results[rep,1:9])
         #println()
-        prettyprint(reshape(mean(results[1:rep,:],1),9,2))
+        # prettyprint(reshape(mean(results[1:rep,:],1),9,2))
     end    
-    writedlm("MCMCresults.out", results)
+    #writedlm("MCMCresults.out", results)
 end
 main();

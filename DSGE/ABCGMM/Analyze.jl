@@ -8,5 +8,6 @@ for param = 1:3
     lower = data[:,param*4-2+1]
     upper = data[:,param*4-1+1]
     inci = (lower .< truep[param]) .& (upper .> truep[param])
+    println("mean, parameter ", param, ": ", mean(est))
     println("ci coverage, parameter ", param, ": ", mean(inci))
 end    
